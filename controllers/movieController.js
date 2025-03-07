@@ -79,6 +79,8 @@ const deleteMovie = asyncHandler(async(req,res)=>{
     }
     await movierecord.deleteOne(); // since movierecord is already found
 
+    // or->  await Moviedb.findByIdAndDelete(req.params.id);
+
     res.status(200).json(movierecord);
 });
 

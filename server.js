@@ -10,6 +10,7 @@ connectDb(); //connecting to the db
 app.use(express.json());
 
 app.use("/api/movies", require("./routes/movieRoutes")); // middleware for api path
+app.use("/api/users", require("./routes/userRoutes")); // middle ware for authenticating and managing users
 app.use(errorHandler); // middleware
 
 
