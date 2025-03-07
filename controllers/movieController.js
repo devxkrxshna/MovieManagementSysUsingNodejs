@@ -9,7 +9,7 @@ const Moviedb = require("../models/movieModel");
  // @access public
 
  const getMovies = asyncHandler(async(req,res)=>{ //async is used because mongo db returns a promise
-    const movies = await Moviedb.find(); //database model access
+    const movies = await Moviedb.find(); //database 
     res.status(200).json(movies)
 });
 
@@ -72,7 +72,14 @@ const updateMovie= asyncHandler(async(req,res)=>{
  // @access public
 
 const deleteMovie = asyncHandler(async(req,res)=>{
-    res.status(200).json({message:`Delete contact for ${req.params.id}`});
+    const movierecord = await Moviedb.findById(req.params.id)
+    if(!movierecord){
+        res.status(404);
+        throw new Error("Movie not found")
+    }
+    await movierecord.deleteOne(); // since movierecord is already found
+
+    res.status(200).json(movierecord);
 });
 
 
