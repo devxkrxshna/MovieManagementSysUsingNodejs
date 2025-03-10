@@ -10,13 +10,18 @@ const Moviedb = require("../models/movieModel");
 
  const getMovies = asyncHandler(async(req,res)=>{ //async is used because mongo db returns a promise
     const movies = await Moviedb.find(); //database 
-    res.status(200).json(movies)
+    if (movies.length === 0) {
+        res.status(404);
+        throw new Error("No movies available");
+    }
+    res.status(200).json(movies);
+ 
 });
 
 
  //@description: POST contact
  //@route POST /api/contacts
- // @access public
+ // @access Private
 
 const  createMovie = asyncHandler(async(req,res)=>{
     console.log(req.body);
@@ -36,7 +41,7 @@ const  createMovie = asyncHandler(async(req,res)=>{
 
  //@description: GET contact
  //@route GET /api/contacts/:id
- // @access public
+ // @access Private
 
 const getMovie = asyncHandler(async(req,res)=>{
     const movierecord = await Moviedb.findById(req.params.id)
@@ -49,7 +54,7 @@ const getMovie = asyncHandler(async(req,res)=>{
 
  //@description: PUT contact
  //@route PUT /api/contacts/:id
- // @access public
+ // @access Private
  
 const updateMovie= asyncHandler(async(req,res)=>{
     const movierecord = await Moviedb.findById(req.params.id)
@@ -69,7 +74,7 @@ const updateMovie= asyncHandler(async(req,res)=>{
 
  //@description: DELETE contact
  //@route DELETE /api/contacts/:id
- // @access public
+ // @access Private
 
 const deleteMovie = asyncHandler(async(req,res)=>{
     const movierecord = await Moviedb.findById(req.params.id)
@@ -84,11 +89,60 @@ const deleteMovie = asyncHandler(async(req,res)=>{
     res.status(200).json(movierecord);
 });
 
+// @description: Get the average rating of a movie by name
+// @route GET /api/movies/rating?name=MovieName
+// @access Public
+
+const getMovieAverageRating = asyncHandler(async (req, res) => {
+    const { name } = req.query; // Extract movie name from query parameters
+    if (!name) {
+        res.status(400);
+        throw new Error("Movie name is required");
+    }
+    // Find all movie records with the specified name
+    const movies = await Moviedb.find({ name });
+    if (movies.length === 0) {
+        res.status(404);
+        throw new Error("Movie not found");
+    }
+    // Calculate the average rating
+    const totalRatings = movies.reduce((sum, movie) => sum + movie.rating, 0);
+    const averageRating = (totalRatings / movies.length).toFixed(1); // Round to 1 decimal place
+
+    res.status(200).json({
+        name,
+        totalRatings: movies.length,
+        averageRating
+    });
+});
+
+// @description: Get movies filtered by name, rating, or genre
+// @route GET /api/movies/search?name=MovieName&rating=4&genre=Action
+// @access Public
+const getMoviesByFilters = asyncHandler(async (req, res) => {
+    const { name, rating, genre } = req.query;
+    let query = {}; // Initialize an empty query object
+
+    if (name) query.name = name;
+    if (rating) query.rating = rating;
+    if (genre) query.genre = genre;
+
+    const movies = await Moviedb.find(query); // Fetch filtered movies
+
+    if (movies.length === 0) {
+        return res.status(404).json({ message: "No movies found matching the criteria." });
+    }
+
+    res.status(200).json(movies);
+});
+
 
 module.exports= {
     getMovies, 
     createMovie,
     getMovie,
     updateMovie,
-    deleteMovie
+    deleteMovie,
+    getMovieAverageRating,
+    getMoviesByFilters
 }

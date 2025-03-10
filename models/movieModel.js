@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 //mongoose object for objectdata modelling
 const movieSchema = new mongoose.Schema({
+    // user_id:{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     required: true,
+    //     ref: "Userdb",
+    // },
     name: {
         type: String,
         required: [true, "Please add the movie name"],
@@ -19,21 +24,7 @@ const movieSchema = new mongoose.Schema({
         max: [5, "Rating must be at most 5"],
         required: true
     },
-    // ratings: [
-    //     {
-    //         user: {
-    //             type: mongoose.Schema.Types.ObjectId,
-    //             ref: "User", // Assuming you have a User model
-    //             required: true
-    //         },
-    //         rating: {
-    //             type: Number,
-    //             min: [1, "Rating must be at least 1"],
-    //             max: [5, "Rating must be at most 5"],
-    //             required: true
-    //         }
-    //     }
-    // ],
+
 }, { timestamps: true });
 
 // // Virtual field to calculate average rating

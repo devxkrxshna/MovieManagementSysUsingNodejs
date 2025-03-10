@@ -6,10 +6,17 @@ const {
      createMovie,
      getMovie,
      updateMovie,
-     deleteMovie
+     deleteMovie,
+     getMovieAverageRating,
+     getMoviesByFilters
     } = require("../controllers/movieController");
+const validateToken = require("../middleware/validateTokenHandler");
 
-router.route("/").get(getMovies).post(createMovie);
-router.route("/:id").get(getMovie).put(updateMovie).delete(deleteMovie);
+
+// router.use(validateToken);
+router.route("/rating").get(getMovieAverageRating);
+router.route("/search").get(getMoviesByFilters);
+router.route("/").get(getMovies).post(validateToken,createMovie);
+router.route("/:id").get(getMovie).put(validateToken,updateMovie).delete(validateToken,deleteMovie);
 
 module.exports = router;
